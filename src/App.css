@@ -1,22 +1,25 @@
-.App {
-  text-align: center;
+
+
+html, body {
+  height: 100%;
 }
 
-.App-logo {
-  height: 40vmin;
+.full-height {
+  height: 100%;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.content-chat {
+  height: 86%;
 }
 
-.App-link {
-  color: #09d3ac;
+.header-footer-chat {
+  height: 7%;
+}
+
+.button-chat{
+  width: 5%;
+}
+
+.input-chat{
+  width: 95%;
 }
