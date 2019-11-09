@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {Component} from 'react';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Container from 'react-bootstrap/Container';
-import ChatMessage from './Components/ChatMessage';
+//import Container from 'react-bootstrap/Container';
+import ChatRoomMessages from './Components/ChatRoomMessages';
 import ChatRooms from './Components/ChatRooms';
 
 import './App.css';
@@ -22,15 +22,36 @@ import './App.css';
 */
 
 
-function App() {
-        
-        
-    return (
-        <Container>
+class App extends Component {
+
+    constructor(props) {
+        super(props)
+    
+        this.handleChatRoomMessagesChange= this.handleChatRoomMessagesChange.bind(this);
+        this.handleChatRoomChange = this.handleChatRoomChange.bind(this);
+    }
+    
+    //My id =  (userId)
+    state = {
+        roomId: "",
+        myId: 1
+    }
+
+    handleChatRoomChange(id){
+        console.log("you clicked room :"+ id)
+        this.setState({roomId: id})
+    }
+
+    handleChatRoomMessagesChange(){
+
+    }
+ 
+    render() {
+        return(
             <Row className="row h-100">
 
                 <Col className="col-3 bg-info overflow-auto ">
-                    <ChatRooms/>
+                    <ChatRooms handleChatRoomChange = {this.handleChatRoomChange} />
                 </Col>
 
 
@@ -40,18 +61,14 @@ function App() {
                         <h5 className="ml-2 mb-0">Nombre</h5>
                     </Row>
 
-                    <div className="bg-success content-chat overflow-auto ">
-                        <div className="d-flex flex-column w-100">
-                            <ChatMessage msg= "message test" isLeft={false} />
-                            <ChatMessage msg= "message test" isLeft={true} />
-                            <ChatMessage msg= "message test" isLeft={false} />
-                            <ChatMessage msg= "message test" isLeft={true} />
-                            <ChatMessage msg= "message test" isLeft={true} />
-        
-                                
 
-                        </div>
+                    <div className="bg-success content-chat overflow-auto ">
+                        <ChatRoomMessages 
+                            roomId={this.state.roomId} 
+                            myId ={this.state.myId}
+                        />
                     </div>
+
 
                     <Row className="bg-danger header-footer-chat">
                         <input className="input-chat form-control h-100" type="text" placeholder="Escribir..."></input>
@@ -61,10 +78,10 @@ function App() {
                     </Row>
                 </Col>
 
-
             </Row>
-        </Container>
-    );
+        )
+
+    };
 }
 
 export default App;

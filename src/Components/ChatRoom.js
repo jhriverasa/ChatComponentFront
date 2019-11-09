@@ -1,15 +1,26 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import './ChatRoom.css';
 
 class ChatRoom extends Component {
+    constructor(props) {
+        super(props)
+        this.handleClick = this.handleClick.bind(this);
+    }
+    
 
+    handleClick(){
+        
+        this.props.handleChatRoomChange(this.props.id);
+
+    }
 
     render() {
         return (
-            <div>
-                <Row>
+            
+                <Row className="chat-room-div" onClick={this.handleClick}>
                     <Col className="col-2 p-0 align-self-center">
                         <img className="img-fluid" src={this.props.src} alt=":)" ></img>
                     </Col>
@@ -29,7 +40,7 @@ class ChatRoom extends Component {
                         </Row>
                     </Col>
                 </Row>
-            </div>
+            
         )
     }
 }
