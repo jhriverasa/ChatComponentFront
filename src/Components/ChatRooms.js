@@ -22,7 +22,7 @@ class ChatRooms extends Component {
     
     componentDidMount(){
 
-        axios.get(`http://localhost:3001/1/room`)
+        axios.get("http://localhost:3001/"+ this.props.myId +"/room")
         .then(response => {
             const chatRooms = response.data;
             this.setState({chatRooms});
