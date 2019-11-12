@@ -10,20 +10,6 @@ import axios from 'axios';
 import './App.css';
 
 
-/*
-    var socket = io('http://localhost:3001');
-    socket.emit("subscribe", "5dad53f3dbfd524e794f92ca");
-    socket.on('conversation private post', function(data) {
-        console.log(data.message);
-    });
-    socket.emit("send message", {
-        room: "5dad53f3dbfd524e794f92ca",
-        userID: 1,
-        message: "mierda!!!"	
-    });
-*/
-
-
 class App extends Component {
 
     constructor(props) {
@@ -33,6 +19,7 @@ class App extends Component {
         this.handleChatRoomChange = this.handleChatRoomChange.bind(this);
         this.handleSendMessage = this.handleSendMessage.bind(this);
         this.handleTextBoxChange = this.handleTextBoxChange.bind(this);
+  
     }
     
     //My id =  (userId)
@@ -40,24 +27,63 @@ class App extends Component {
         roomId: "",
         myId: 1,
         textBoxValue: "",
-        messages: []
+        messages: [],
+        chatRooms: []
 
     }
 
+    componentDidMount(){
+        //Load all rooms
+        axios.get("http://localhost:3001/"+ this.state.myId +"/room")
+        .then(response => {
+            const chatRooms = response.data;
+            this.setState({chatRooms});  
+
+            //after load all rooms, subscribe all of them and listen each
+            var i
+            for(i=0;i<chatRooms.length;i++){
+                var id= chatRooms[i].id
+                var socket = io('http://localhost:3001');
+                socket.emit("subscribe", id);
+                socket.on('conversation private post', (data ) => {
+                    //if i receive some message add it to my state 
+                    console.log(data);
+                    
+                    //update messages (if I selected some room)
+                   this.handleChatRoomChange(this.state.roomId)
+                    
+                    //also refresh chatrooms with their last message sent/received
+                    setTimeout(()=> {
+                        axios.get("http://localhost:3001/"+ this.state.myId +"/room")
+                        .then(response => {
+                            const chatRooms = response.data;
+                            this.setState({chatRooms:chatRooms});
+                            //console.log(chatRooms)
+                        })
+                    }, 850);
+                });
+            }
+            
+        })
+    }
+
+
     handleChatRoomChange(id){
         console.log("you clicked room :"+ id)
-        this.setState({roomId: id})
+        this.setState({roomId: id})  
 
+        // Get all messages in this chat room
         axios.get("http://localhost:3001/"+ id)
             .then(response => {
                 const messages = response.data[0].messages;
                 console.log(this.state.messages)
-                this.setState({messages: messages});
+                this.setState({messages:messages})
             })
             .catch(function (error) {
                 // handle error
                 console.log(error);
             })
+            
     }
 
     
@@ -70,30 +96,28 @@ class App extends Component {
             console.log("please enter a message.");
         }else{
 
-            var socket = io('http://localhost:3001');
-            socket.emit("subscribe", this.state.roomId);
-            socket.on('conversation private post', function(data) {
-                console.log("Message sent: " + data.message);
-            });
-
             //Send message
+            var socket = io('http://localhost:3001');
             socket.emit("send message", {
                 room: this.state.roomId,
                 userID: this.state.myId,
                 message: this.state.textBoxValue	
-            });
-            var msg = {
-                    _id: this.state.roomId,
-                    userID: this.state.myId,
-                    message: this.state.textBoxValue,
-                    created_at: Date.now()
-            }
+            });    
 
-
-            
-            this.setState({messages:this.state.messages.concat(msg)})
             //Clean
             this.setState({textBoxValue : ""})
+
+            //Updates chatrooms after message is sent
+            setTimeout(()=> {
+                axios.get("http://localhost:3001/"+ this.state.myId +"/room")
+                .then(response => {
+                    const chatRooms = response.data;
+                    this.setState({chatRooms:chatRooms});
+                    console.log(chatRooms)
+                })
+            }, 750);
+               
+           
             
             
         }
@@ -107,7 +131,7 @@ class App extends Component {
             <Row className="h-100 w-100">
 
                 <Col className="col-3 bg-info overflow-auto ">
-                    <ChatRooms myId ={this.state.myId} handleChatRoomChange = {this.handleChatRoomChange} />
+                    { this.state.chatRooms !== [] && <ChatRooms chatRooms={this.state.chatRooms} handleChatRoomChange = {this.handleChatRoomChange} />}
                 </Col>
 
 

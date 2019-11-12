@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Container from 'react-bootstrap/Container'
 import ChatRoom from './ChatRoom';
-import axios from 'axios'
+//import axios from 'axios'
 
 class ChatRooms extends Component {
 
@@ -16,24 +16,11 @@ class ChatRooms extends Component {
     }
 
 
-    state = {
-        chatRooms: []
-    }
     
-    componentDidMount(){
-
-        axios.get("http://localhost:3001/"+ this.props.myId +"/room")
-        .then(response => {
-            const chatRooms = response.data;
-            this.setState({chatRooms});
-        })
-            
-    }
-
     render() {
         return (
             <Container>
-                   {this.state.chatRooms.map(room => 
+                   {this.props.chatRooms.map(room => 
 
                         <ChatRoom                            
                             key={room.id}
